@@ -222,7 +222,7 @@ drivers_taxa_crescimento <- data.frame(
   `Usuarios_residenciais`= c(taxa_usuarios_residenciais_2018, taxa_usuarios_residenciais_2019, taxa_usuarios_residenciais_2020, taxa_usuarios_residenciais_2021, taxa_usuarios_residenciais_2022, taxa_usuarios_residenciais_2023, taxa_usuarios_residenciais_2024),
   `Novos_usuarios_residenciais` = c(taxa_novos_residenciais_2018, taxa_novos_residenciais_2019, taxa_novos_residenciais_2020, taxa_novos_residenciais_2021, taxa_novos_residenciais_2022, taxa_novos_residenciais_2023, taxa_novos_residenciais_2024),
   `Novos_usuarios_comerciais`= c(taxa_novos_comerciais_2018, taxa_novos_comerciais_2019, taxa_novos_comerciais_2020, taxa_novos_comerciais_2021, taxa_novos_comerciais_2022, taxa_novos_comerciais_2023, taxa_novos_comerciais_2024),
-  `Usuarios` = c(taxa_Usuarios_2018, taxa_usuarios_2019, taxa_usuarios_2020, taxa_usuarios_2021, taxa_usuarios_2022, taxa_usuarios_2023, taxa_usuarios_2024),
+  `Usuarios` = c(taxa_usuarios_2018, taxa_usuarios_2019, taxa_usuarios_2020, taxa_usuarios_2021, taxa_usuarios_2022, taxa_usuarios_2023, taxa_usuarios_2024),
   `Novos_usuarios` = c(taxa_novos_usuarios_2018, taxa_novos_usuarios_2019, taxa_novos_usuarios_2020, taxa_novos_usuarios_2021, taxa_novos_usuarios_2022, taxa_novos_usuarios_2023, taxa_novos_usuarios_2024)
   
 ) # feito a taxa de crescimento de cada drivers
@@ -242,5 +242,15 @@ View(medias_taxa_crescimento)
 medias_drivers_ano <- colMeans(drivers_ano[,-1], na.rm = T)
 medias_drivers_ano <- round(medias_drivers_ano, 0)
 medias_drivers_ano <- data.frame(medias_drivers_ano)
+view(medias_drivers_ano)
+##############################################################################
+# DRIVER - EMPREGADOS
+require(readxl)
+
+driver_empregados <- read_excel("driver_empregado.xlsx")
+view(driver_empregados)
+
+
+
 
 
