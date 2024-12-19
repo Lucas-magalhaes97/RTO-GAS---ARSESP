@@ -248,9 +248,15 @@ view(medias_drivers_ano)
 require(readxl)
 
 driver_empregados <- read_excel("driver_empregado.xlsx")
+colnames(driver_empregados)[1] <- "Período"
 view(driver_empregados)
 
+driver_empregados <- t(driver_empregados)
+driver_empregados <- data.frame(driver_empregados)
+colnames(driver_empregados) <- driver_empregados[1,]
+driver_empregados <- driver_empregados[-1,]
 
-
-
+driver_empregados <- rownames_to_column(driver_empregados, "Período")
+driver_empregados <- driver_empregados %>% 
+  mutate(Período = seq(as.Date(01-01-2018)))
 
