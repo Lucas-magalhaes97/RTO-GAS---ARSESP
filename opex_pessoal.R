@@ -243,6 +243,7 @@ medias_drivers_ano <- colMeans(drivers_ano[,-1], na.rm = T)
 medias_drivers_ano <- round(medias_drivers_ano, 0)
 medias_drivers_ano <- data.frame(medias_drivers_ano)
 view(medias_drivers_ano)
+
 ##############################################################################
 # DRIVER - EMPREGADOS
 require(readxl)
