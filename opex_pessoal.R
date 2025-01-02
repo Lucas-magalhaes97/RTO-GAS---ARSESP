@@ -1,6 +1,10 @@
 require(tidyverse)
 require(magrittr)
 require(data.table)
+library(usethis)
+
+use_git_config(user.name = "Lucas-magalhaes97", 
+               user.email = "lucasmagalhaes@ufpr.br")
 
 # Lendo os drivers
 drivers <- fread("Drivers.csv", header = TRUE)
@@ -66,168 +70,32 @@ drivers_ano <- mutate(drivers_ano, Fixo = 1) %>%
 
 view(drivers_ano) 
 
-
+# outra forma de fazer:
+#drivers_ano <- drivers %>%
+  #mutate(Ano = year(Período)) %>%
+  #group_by(Ano) %>%
+  #summarise(across(everything(), ~sum(.x, na.rm = TRUE)))
 
 
 #####################################################################
-# Encontrando a taxa de crescimento do drivers de forma manual
+# Encontrando a taxa de crescimento do drivers de forma mais rapida
 
-# Extensão de rede
-extensao_2018 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2018]
-extensao_2019 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2019]
-extensao_2020 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2020]
-extensao_2021 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2021]
-extensao_2022 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2022]
-extensao_2023 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2023]
-extensao_2024 <- drivers_ano$`Extensão de rede`[drivers_ano$Ano == 2024]
+# Calculando as taxas de crescimento
+base_2018 <- drivers_ano %>%
+  filter(Ano == 2018) %>%
+  select(-Ano, -Fixo)
 
-taxa_extensao_2018 <- extensao_2018/extensao_2018
-taxa_extensao_2019 <- extensao_2019/extensao_2018
-taxa_extensao_2020 <- extensao_2020/extensao_2018
-taxa_extensao_2021 <- extensao_2021/extensao_2018
-taxa_extensao_2022 <- extensao_2022/extensao_2018
-taxa_extensao_2023 <- extensao_2023/extensao_2018
-taxa_extensao_2024 <- extensao_2024/extensao_2018
+# Criando o data.frame de taxas de crescimento
+drivers_taxa_crescimento <- drivers_ano %>%
+  mutate(across(names(base_2018), ~ .x / base_2018[[cur_column()]])) %>%
+  select(Ano, Fixo, everything())  # Mantendo as colunas Ano e Fixo no início
 
+# Ajustando os nomes das colunas para manter o original
+colnames(drivers_taxa_crescimento)[-(1:2)] <- colnames(base_2018)
 
-# Extensão adicional de rede
-extensao_adicional_2018 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2018]
-extensao_adicional_2019 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2019]
-extensao_adicional_2020 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2020]
-extensao_adicional_2021 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2021]
-extensao_adicional_2022 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2022]
-extensao_adicional_2023 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2023]
-extensao_adicional_2024 <- drivers_ano$`Extensão adicional de rede`[drivers_ano$Ano == 2024]
-
-taxa_extensao_adicional_2018 <- extensao_adicional_2018/extensao_adicional_2018
-taxa_extensao_adicional_2019 <- extensao_adicional_2019/extensao_adicional_2018
-taxa_extensao_adicional_2020 <- extensao_adicional_2020/extensao_adicional_2018
-taxa_extensao_adicional_2021 <- extensao_adicional_2021/extensao_adicional_2018
-taxa_extensao_adicional_2022 <- extensao_adicional_2022/extensao_adicional_2018
-taxa_extensao_adicional_2023 <- extensao_adicional_2023/extensao_adicional_2018
-taxa_extensao_adicional_2024 <- extensao_adicional_2024/extensao_adicional_2018
-
-
-# Novos domicílios
-novos_domicilios_2018 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2018]
-novos_domicilios_2019 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2019]
-novos_domicilios_2020 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2020]
-novos_domicilios_2021 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2021]
-novos_domicilios_2022 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2022]
-novos_domicilios_2023 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2023]
-novos_domicilios_2024 <- drivers_ano$`Novos domicílios`[drivers_ano$Ano == 2024]
-
-taxa_novos_domicilios_2018 <- novos_domicilios_2018/novos_domicilios_2018
-taxa_novos_domicilios_2019 <- novos_domicilios_2019/novos_domicilios_2018
-taxa_novos_domicilios_2020 <- novos_domicilios_2020/novos_domicilios_2018
-taxa_novos_domicilios_2021 <- novos_domicilios_2021/novos_domicilios_2018
-taxa_novos_domicilios_2022 <- novos_domicilios_2022/novos_domicilios_2018
-taxa_novos_domicilios_2023 <- novos_domicilios_2023/novos_domicilios_2018
-taxa_novos_domicilios_2024 <- novos_domicilios_2024/novos_domicilios_2018
-
-# Novos usuários comerciais
-novos_usuarios_comerciais_2018 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2018]
-novos_usuarios_comerciais_2019 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2019]
-novos_usuarios_comerciais_2020 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2020]
-novos_usuarios_comerciais_2021 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2021]
-novos_usuarios_comerciais_2022 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2022]
-novos_usuarios_comerciais_2023 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2023]
-novos_usuarios_comerciais_2024 <- drivers_ano$`Novos usuários comerciais`[drivers_ano$Ano == 2024]
-
-taxa_novos_comerciais_2018 <- novos_usuarios_comerciais_2018/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2019 <- novos_usuarios_comerciais_2019/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2020 <- novos_usuarios_comerciais_2020/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2021 <- novos_usuarios_comerciais_2021/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2022 <- novos_usuarios_comerciais_2022/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2023 <- novos_usuarios_comerciais_2023/novos_usuarios_comerciais_2018
-taxa_novos_comerciais_2024 <- novos_usuarios_comerciais_2024/novos_usuarios_comerciais_2018
-
-# Novos usuários residenciais
-novos_usuarios_residenciais_2018 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2018]
-novos_usuarios_residenciais_2019 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2019]
-novos_usuarios_residenciais_2020 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2020]
-novos_usuarios_residenciais_2021 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2021]
-novos_usuarios_residenciais_2022 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2022]
-novos_usuarios_residenciais_2023 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2023]
-novos_usuarios_residenciais_2024 <- drivers_ano$`Novos usuários residenciais`[drivers_ano$Ano == 2024]
-
-taxa_novos_residenciais_2018 <- novos_usuarios_residenciais_2018/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2019 <- novos_usuarios_residenciais_2019/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2020 <- novos_usuarios_residenciais_2020/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2021 <- novos_usuarios_residenciais_2021/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2022 <- novos_usuarios_residenciais_2022/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2023 <- novos_usuarios_residenciais_2023/novos_usuarios_residenciais_2018
-taxa_novos_residenciais_2024 <- novos_usuarios_residenciais_2024/novos_usuarios_residenciais_2018
-
-# Usuários
-usuarios_2018 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2018]
-usuarios_2019 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2019]
-usuarios_2020 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2020]
-usuarios_2021 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2021]
-usuarios_2022 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2022]
-usuarios_2023 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2023]
-usuarios_2024 <- drivers_ano$`Usuários`[drivers_ano$Ano == 2024]
-
-taxa_usuarios_2018 <- usuarios_2018/usuarios_2018
-taxa_usuarios_2019 <- usuarios_2019/usuarios_2018
-taxa_usuarios_2020 <- usuarios_2020/usuarios_2018
-taxa_usuarios_2021 <- usuarios_2021/usuarios_2018
-taxa_usuarios_2022 <- usuarios_2022/usuarios_2018
-taxa_usuarios_2023 <- usuarios_2023/usuarios_2018
-taxa_usuarios_2024 <- usuarios_2024/usuarios_2018
-
-# Usuários residenciais
-usuarios_residenciais_2018 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2018]
-usuarios_residenciais_2019 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2019]
-usuarios_residenciais_2020 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2020]
-usuarios_residenciais_2021 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2021]
-usuarios_residenciais_2022 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2022]
-usuarios_residenciais_2023 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2023]
-usuarios_residenciais_2024 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2024]
-
-taxa_usuarios_residenciais_2018 <- usuarios_residenciais_2018/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2019 <- usuarios_residenciais_2019/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2020 <- usuarios_residenciais_2020/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2021 <- usuarios_residenciais_2021/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2022 <- usuarios_residenciais_2022/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2023 <- usuarios_residenciais_2023/usuarios_residenciais_2018
-taxa_usuarios_residenciais_2024 <- usuarios_residenciais_2024/usuarios_residenciais_2018
-
-# Novos usuários
-novos_usuarios_2018 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2018]
-novos_usuarios_2019 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2019]
-novos_usuarios_2020 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2020]
-novos_usuarios_2021 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2021]
-novos_usuarios_2022 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2022]
-novos_usuarios_2023 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2023]
-novos_usuarios_2024 <- drivers_ano$`Usuários residenciais`[drivers_ano$Ano == 2024]
-
-taxa_novos_usuarios_2018 <- novos_usuarios_2018/novos_usuarios_2018
-taxa_novos_usuarios_2019 <- novos_usuarios_2019/novos_usuarios_2018
-taxa_novos_usuarios_2020 <- novos_usuarios_2020/novos_usuarios_2018
-taxa_novos_usuarios_2021 <- novos_usuarios_2021/novos_usuarios_2018
-taxa_novos_usuarios_2022 <- novos_usuarios_2022/novos_usuarios_2018
-taxa_novos_usuarios_2023 <- novos_usuarios_2023/novos_usuarios_2018
-taxa_novos_usuarios_2024 <- novos_usuarios_2024/novos_usuarios_2018
-
-##### criando uma tabela de forma manual
-
-# criando um data frame
-drivers_taxa_crescimento <- data.frame(
-  Período = seq(as.Date("2018-01-01"), as.Date("2024-01-01"), by = "year"),
-  Fixo = 1,
-  `Extensao_de_rede`= c(taxa_extensao_2018, taxa_extensao_2019, taxa_extensao_2020, taxa_extensao_2021, taxa_extensao_2022, taxa_extensao_2023, taxa_extensao_2024),
-  `Extensao_adicional_de_rede` = c(taxa_extensao_adicional_2018, taxa_extensao_adicional_2019, taxa_extensao_adicional_2020, taxa_extensao_adicional_2021, taxa_extensao_adicional_2022, taxa_extensao_adicional_2023, taxa_extensao_adicional_2024),
-  `Novos_domicilios`= c(taxa_novos_domicilios_2018, taxa_novos_domicilios_2019, taxa_novos_domicilios_2020, taxa_novos_domicilios_2021, taxa_novos_domicilios_2022, taxa_novos_domicilios_2023,taxa_novos_domicilios_2024),
-  `Usuarios_residenciais`= c(taxa_usuarios_residenciais_2018, taxa_usuarios_residenciais_2019, taxa_usuarios_residenciais_2020, taxa_usuarios_residenciais_2021, taxa_usuarios_residenciais_2022, taxa_usuarios_residenciais_2023, taxa_usuarios_residenciais_2024),
-  `Novos_usuarios_residenciais` = c(taxa_novos_residenciais_2018, taxa_novos_residenciais_2019, taxa_novos_residenciais_2020, taxa_novos_residenciais_2021, taxa_novos_residenciais_2022, taxa_novos_residenciais_2023, taxa_novos_residenciais_2024),
-  `Novos_usuarios_comerciais`= c(taxa_novos_comerciais_2018, taxa_novos_comerciais_2019, taxa_novos_comerciais_2020, taxa_novos_comerciais_2021, taxa_novos_comerciais_2022, taxa_novos_comerciais_2023, taxa_novos_comerciais_2024),
-  `Usuarios` = c(taxa_usuarios_2018, taxa_usuarios_2019, taxa_usuarios_2020, taxa_usuarios_2021, taxa_usuarios_2022, taxa_usuarios_2023, taxa_usuarios_2024),
-  `Novos_usuarios` = c(taxa_novos_usuarios_2018, taxa_novos_usuarios_2019, taxa_novos_usuarios_2020, taxa_novos_usuarios_2021, taxa_novos_usuarios_2022, taxa_novos_usuarios_2023, taxa_novos_usuarios_2024)
-  
-) # feito a taxa de crescimento de cada drivers
-
+# Visualizando o resultado
 view(drivers_taxa_crescimento)
+
 
 
 # Calcular médias das colunas (ignorando a coluna Período)
@@ -245,19 +113,7 @@ medias_drivers_ano <- data.frame(medias_drivers_ano)
 view(medias_drivers_ano)
 
 ##############################################################################
-# DRIVER - EMPREGADOS
+# Custo Unitários
 require(readxl)
 
-driver_empregados <- read_excel("driver_empregado.xlsx")
-colnames(driver_empregados)[1] <- "Período"
-view(driver_empregados)
-
-driver_empregados <- t(driver_empregados)
-driver_empregados <- data.frame(driver_empregados)
-colnames(driver_empregados) <- driver_empregados[1,]
-driver_empregados <- driver_empregados[-1,]
-
-driver_empregados <- rownames_to_column(driver_empregados, "Período")
-driver_empregados <- driver_empregados %>% 
-  mutate(Período = seq(as.Date(01-01-2018)))
-
+custo_unitario <- read_excel("opex_custounit.xlsx")
